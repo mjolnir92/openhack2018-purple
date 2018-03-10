@@ -23,12 +23,14 @@
 			<div class="lang-select">
 				{{language.name}}
 				<img :src="language.flag">
+				<button v-on:click="getLanguage(language.id)">Välj</button>
 			</div>
 		</div>
 	</template>
 	    
 	<template v-if="language && !category && !tutorial">
 		<!--TODO: Show category page-->
+		<button v-on:click="setCategoryBank">Bank</button>
 	</template>
 	    
 	<template v-if="language && category && !tutorial">
@@ -37,12 +39,13 @@
 			<img :src="tutorial.fields.bakgrundsbild" alt=""><br>
 			<img :src="tutorial.fields.logga" alt=""><br>
 			{{tutorial.fields.introduktion}}
+			<button v-on:click="getTutorial(tutorial.id)">Starta lektion</button>
 		</div>
 	</template>
 	    
 	<template v-if="language && category && tutorial">
 		<!--TODO: Show tutorial by step-->
-		<div v-for="komponent in tutorial.fields.uppbyggnad[step].komponenter">
+		<div v-for="komponent in tutorial.acf.uppbyggnad[step].komponenter">
 			<div v-if="komponent.acf_fc_layout == 'text'">
 				{{komponent.text}}<br>
 			</div>
@@ -58,7 +61,7 @@
 		</div>
 		<!--TODO: Step buttons here-->
 		<div class="step-buttons">
-			<template v-if="tutorial.fields.uppbyggnad.length == 0">
+			<template v-if="tutorial.acf.uppbyggnad.length == 1">
 				<!--Exit only-->
 				<button v-on:click="menu">Avsluta</button>
 			</template>
@@ -69,7 +72,7 @@
 					<button v-on:click="stepForward">Nästa</button>
 				</template>
 				<template v-else>
-					<template v-if="step == (tutorial.fields.uppbyggnad.length - 1)">
+					<template v-if="step == (tutorial.acf.uppbyggnad.length - 1)">
 						<!--Back and exit-->
 						<button v-on:click="stepBack">Föregående</button>
 						<button v-on:click="menu">Avsluta</button>
@@ -81,7 +84,7 @@
 						<button v-on:click="stepForward">Nästa</button>
 					</template>
 				</template>
-			</template
+			</template>
 		</div>
 	</template>
     </div>
@@ -113,6 +116,26 @@
 		menu: function(){
 			this.category = null
 			this.tutorial = null
+		},
+		setCategoryBank: function(){
+			this.category = "bank"
+		},
+		getTutorial: function(id){
+		  this.$http.get('http://weird.se/wp-json/wp/v2/tutorials/' + id).then(({body}) => {
+			console.log(body)
+			this.tutorial = body;
+		  }, response => {
+		    console.log('ERROR!');
+		  });
+		},
+		getLanguage: function(id){
+			console.log(id)
+		  this.$http.get('http://weird.se/wp-json/wp/v2/languages/' + id).then(({body}) => {
+			console.log(body)
+			this.language = body;
+		  }, response => {
+		    console.log('ERROR!');
+		  });
 		}
 	},
         http: {
@@ -141,6 +164,7 @@
 	  this.$http.get('http://weird.se/wp-json/wp/v2/languages').then(({body}) => {
             const languages = body.map((post) => {
               return {
+		id: post.id,
                 name: post.title.rendered,
                 flag: post.acf.flagga
               }
