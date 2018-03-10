@@ -17,27 +17,73 @@
         Text: {{tutorial.fields.text}}
       </div>
     -->
-    <template v-if="!language && !category && !tutorial">
-    	<!--TODO: Show language page-->
-	<div class="lang-list" v-for="language in languages">
-		<div class="lang-select">
-			{{language.name}}
-			<img :src="language.flag">
+	<template v-if="!language && !category && !tutorial">
+		<!--TODO: Show language page-->
+		<div class="lang-list" v-for="language in languages">
+			<div class="lang-select">
+				{{language.name}}
+				<img :src="language.flag">
+			</div>
 		</div>
-	</div>
-    </template>
-    
-    <template v-if="language && !category && !tutorial">
-    	<!--TODO: Show category page-->
-    </template>
-    
-    <template v-if="language && category && !tutorial">
-    	<!--TODO: Show tutorial selection page for category-->
-    </template>
-    
-    <template v-if="language && category && tutorial">
-    	<!--TODO: Show tutorial by step-->
-    </template>
+	</template>
+	    
+	<template v-if="language && !category && !tutorial">
+		<!--TODO: Show category page-->
+	</template>
+	    
+	<template v-if="language && category && !tutorial">
+		<!--TODO: Show tutorial selection page for category-->
+		<div v-for="tutorial in tutorials">
+			<img :src="tutorial.fields.bakgrundsbild" alt=""><br>
+			<img :src="tutorial.fields.logga" alt=""><br>
+			{{tutorial.fields.introduktion}}
+		</div>
+	</template>
+	    
+	<template v-if="language && category && tutorial">
+		<!--TODO: Show tutorial by step-->
+		<div v-for="komponent in tutorial.fields.uppbyggnad[step].komponenter">
+			<div v-if="komponent.acf_fc_layout == 'text'">
+				{{komponent.text}}<br>
+			</div>
+			<div v-if="komponent.acf_fc_layout == video">
+				<!--TODO: Embed video here-->
+			</div>
+			<div v-if="komponent.acf_fc_layout == bild">
+				<img :src="komponent.bild_url" alt=""><br>
+			</div>
+			<div v-if="komponent.acf_fc_layout == ljudfil">
+				<!--TODO: Embed audio here-->
+			</div>
+		</div>
+		<!--TODO: Step buttons here-->
+		<div class="step-buttons">
+			<template v-if="tutorial.fields.uppbyggnad.length == 0">
+				<!--Exit only-->
+				<button v-on:click="menu">Avsluta</button>
+			</template>
+			<template v-else>
+				<template v-if="step == 0">
+					<!--Forward and exit-->
+					<button v-on:click="menu">Avsluta</button>
+					<button v-on:click="stepForward">Nästa</button>
+				</template>
+				<template v-else>
+					<template v-if="step == (tutorial.fields.uppbyggnad.length - 1)">
+						<!--Back and exit-->
+						<button v-on:click="stepBack">Föregående</button>
+						<button v-on:click="menu">Avsluta</button>
+					</template>
+					<template v-else>
+						<!--All-->
+						<button v-on:click="stepBack">Föregående</button>
+						<button v-on:click="menu">Avsluta</button>
+						<button v-on:click="stepForward">Nästa</button>
+					</template>
+				</template>
+			</template
+		</div>
+	</template>
     </div>
 
     <script>
@@ -51,10 +97,24 @@
 	  languages: [],
           tutorials: [],
 
+	  step: 0,
+
           language: null,
           category: null,
           tutorial: null
         },
+	methods: {
+		stepForward: function(){
+			this.step = this.step + 1
+		},
+		stepBack: function(){
+			this.step = this.step - 1
+		},
+		menu: function(){
+			this.category = null
+			this.tutorial = null
+		}
+	},
         http: {
           root: '/root',
           headers: {
