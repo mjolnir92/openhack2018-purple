@@ -5,17 +5,55 @@
     <title>Open hack 2018 - Purple</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.13/dist/vue.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/1.5.0/vue-resource.js"></script>
   </head>
   <body>
     <div id="app">
-      {{message}}
+      <div v-for="tutorial in tutorials">
+        <img :src="tutorial.fields.bakgrundsbild" alt=""><br>
+        <img :src="tutorial.fields.logga" alt=""><br>
+        Title: {{tutorial.title}}<br>
+        Text: {{tutorial.fields.text}}
+
+      </div>
     </div>
 
     <script>
+      Vue.http.options.root = '/root';
+      Vue.http.headers.common['Authorization'] = 'YXBpOnBhc3N3b3Jk';
+
       const app = new Vue({
         el: '#app',
         data: {
-          message: 'Hello Purple'
+          message: 'Hello Purple',
+          tutorials: [],
+
+          language: null,
+          category: null,
+          tutorial: null
+        },
+        http: {
+          root: '/root',
+          headers: {
+            Authorization: 'YXBpOnBhc3N3b3Jk'
+          }
+        },
+        mounted() {
+          this.$http.get('http://weird.se/wp-json/wp/v2/tutorials').then(({body}) => {
+            const tutorials = body.map((post) => {
+              return {
+                id: post.id,
+                title: post.title.rendered,
+                fields: post.acf
+              }
+            });
+
+            console.log(tutorials);
+
+            this.tutorials = tutorials;
+          }, response => {
+            console.log('ERROR!');
+          });
         }
       });
     </script>
