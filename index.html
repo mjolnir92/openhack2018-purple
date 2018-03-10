@@ -33,6 +33,11 @@
     
     <template v-if="language && category && !tutorial">
     	<!--TODO: Show tutorial selection page for category-->
+	<div v-for="tutorial in tutorials">
+		<img :src="tutorial.fields.bakgrundsbild" alt=""><br>
+		<img :src="tutorial.fields.logga" alt=""><br>
+		{{tutorial.fields.introduktion}}
+	</div>
     </template>
     
     <template v-if="language && category && tutorial">
@@ -51,8 +56,8 @@
 	  languages: [],
           tutorials: [],
 
-          language: null,
-          category: null,
+          language: true,
+          category: true,
           tutorial: null
         },
         http: {
