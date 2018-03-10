@@ -1,0 +1,38 @@
+body{
+  background-color: white;
+}
+
+
+#wrapper{
+  height: 667px;
+  width: 375px;
+  background-color: #006AA7;
+  text-align: center;
+  color: white;
+}
+.category{
+  width: 45%;
+  color: #e95b16;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding-top: 5px;
+}
+
+.icon{
+  border-radius: 50%;
+  background-color: #FECC00;
+  width: 60px;
+  height: 60px;
+
+}
+
+.row{
+  display: flex;
+  justify-content: space-around;
+
+}
+
+.translation{
+  margin-top: -30px;
+}
