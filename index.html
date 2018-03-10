@@ -44,7 +44,7 @@
 		<!--TODO: Show tutorial by step-->
 		<div v-for="komponent in tutorial.fields.uppbyggnad[step].komponenter">
 			<div v-if="komponent.acf_fc_layout == 'text'">
-				{{komponent.text}}
+				{{komponent.text}}<br>
 			</div>
 			<div v-if="komponent.acf_fc_layout == video">
 				<!--TODO: Embed video here-->
@@ -57,6 +57,32 @@
 			</div>
 		</div>
 		<!--TODO: Step buttons here-->
+		<div class="step-buttons">
+			<template v-if="tutorial.fields.uppbyggnad.length == 0">
+				<!--Exit only-->
+				<button v-on:click="menu">Avsluta</button>
+			</template>
+			<template v-else>
+				<template v-if="step == 0">
+					<!--Forward and exit-->
+					<button v-on:click="menu">Avsluta</button>
+					<button v-on:click="stepForward">Nästa</button>
+				</template>
+				<template v-else>
+					<template v-if="step == (tutorial.fields.uppbyggnad.length - 1)">
+						<!--Back and exit-->
+						<button v-on:click="stepBack">Föregående</button>
+						<button v-on:click="menu">Avsluta</button>
+					</template>
+					<template v-else>
+						<!--All-->
+						<button v-on:click="stepBack">Föregående</button>
+						<button v-on:click="menu">Avsluta</button>
+						<button v-on:click="stepForward">Nästa</button>
+					</template>
+				</template>
+			</template
+		</div>
 	</template>
     </div>
 
@@ -77,6 +103,18 @@
           category: null,
           tutorial: null
         },
+	methods: {
+		stepForward: function(){
+			this.step = this.step + 1
+		},
+		stepBack: function(){
+			this.step = this.step - 1
+		},
+		menu: function(){
+			this.category = null
+			this.tutorial = null
+		}
+	},
         http: {
           root: '/root',
           headers: {
