@@ -9,13 +9,35 @@
   </head>
   <body>
     <div id="app">
+    <!--
       <div v-for="tutorial in tutorials">
         <img :src="tutorial.fields.bakgrundsbild" alt=""><br>
         <img :src="tutorial.fields.logga" alt=""><br>
         Title: {{tutorial.title}}<br>
         Text: {{tutorial.fields.text}}
-
       </div>
+    -->
+    <template v-if="!language && !category && !tutorial">
+    	<!--TODO: Show language page-->
+	<div class="lang-list" v-for="language in languages">
+		<div class="lang-select">
+			{{language.name}}
+			<img :src="language.flag">
+		</div>
+	</div>
+    </template>
+    
+    <template v-if="language && !category && !tutorial">
+    	<!--TODO: Show category page-->
+    </template>
+    
+    <template v-if="language && category && !tutorial">
+    	<!--TODO: Show tutorial selection page for category-->
+    </template>
+    
+    <template v-if="language && category && tutorial">
+    	<!--TODO: Show tutorial by step-->
+    </template>
     </div>
 
     <script>
@@ -26,6 +48,7 @@
         el: '#app',
         data: {
           message: 'Hello Purple',
+	  languages: [],
           tutorials: [],
 
           language: null,
@@ -51,6 +74,21 @@
             console.log(tutorials);
 
             this.tutorials = tutorials;
+          }, response => {
+            console.log('ERROR!');
+          });
+          
+	  this.$http.get('http://weird.se/wp-json/wp/v2/languages').then(({body}) => {
+            const languages = body.map((post) => {
+              return {
+                name: post.title.rendered,
+                flag: post.acf.flagga
+              }
+            });
+
+            console.log(languages);
+
+            this.languages = languages;
           }, response => {
             console.log('ERROR!');
           });
