@@ -11,12 +11,12 @@ const app = new Vue({
     category: false,
     tutorial: false
   },
-  // http: {
-  //   root: '/root',
-  //   headers: {
-  //     Authorization: 'Basic cHVycGxlOnB1cnBsZTIwMTg='
-  //   }
-  // },
+  http: {
+    root: '/root',
+    headers: {
+      Authorization: 'Basic cHVycGxlOnB1cnBsZTIwMTg='
+    }
+  },
   methods: {
     setLanguage(language) {
       this.language = language || false;
