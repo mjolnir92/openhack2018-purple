@@ -29,6 +29,26 @@ body {
 	margin-bottom: 40px;
 }
 
+/* BUTTON */
+button {
+	border: none;
+	height: 40px;
+	padding: 0 20px;
+	background: #FECC0A;
+	font-size: 18px;
+	color: #FFF;
+	text-transform: uppercase;
+	outline: none;
+	border-radius: 40px;
+	cursor: pointer;
+}
+
+.goBack {
+	position: absolute;
+	top: 10px;
+	left: 10px;
+}
+
 /* TUTORIALS */
 .tutorials::after {
 	display: block;
@@ -75,6 +95,29 @@ body {
 	padding: 10px;
 	text-align: center;
 	font-size: 13px;
+}
+
+/* STEP */
+
+.step {
+
+}
+
+.step-text {
+	font-size: 24px;
+  color: #FFF;
+  line-height: 34px;
+  padding: 20px;
+  border: 1px solid white;
+  width: 100%;
+	margin-bottom: 30px;
+}
+
+.step-image {
+	width: 100%;
+	margin-bottom: 30px;
+	box-shadow: 0 2px 4px rgba(0,0,0,.3);
+	border-radius: 5px;
 }
 
 /* HEADER */
@@ -134,6 +177,15 @@ body {
 	line-height: 80px;
 	color: #FFF;
 	margin-bottom: 10px;
+	position: relative;
+}
+
+.category-image {
+	position: absolute;
+	width: 40px;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%,-50%);
 }
 
 .category-name {

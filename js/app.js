@@ -7,8 +7,8 @@ const app = new Vue({
 
     step: 0,
 
-    language: false,
-    category: false,
+    language: true,
+    category: true,
     tutorial: false
   },
   http: {
@@ -27,15 +27,16 @@ const app = new Vue({
     setTutorial(tutorial) {
       this.tutorial = tutorial || false;
     },
-    stepForward: function(){
+    stepForward(){
       this.step = this.step + 1
     },
-    stepBack: function(){
+    stepBack(){
       this.step = this.step - 1
     },
-    menu: function(){
-      this.category = null
-      this.tutorial = null
+    menu(){
+      this.category = null;
+      this.tutorial = null;
+      this.step = 0;
     }
     // postMessage() {
     //   function makeid() {

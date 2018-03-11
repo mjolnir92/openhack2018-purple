@@ -27,18 +27,19 @@
     	</template>
 
     	<template v-if="language && !category">
+        <button class="goBack" @click="language = false"><</button>
         <purple-header title="Välkommen" translation="Welcome"></purple-header>
         <div class="row">
 
           <purple-category
-            icon="..."
+            icon="bank"
             name="Bank"
             translation="Bank"
             @click.native="setCategory('bank')"
           ></purple-category>
 
           <purple-category
-            icon="..."
+            icon="work"
             name="Jobb"
             translation="Work"
           ></purple-category>
@@ -47,13 +48,13 @@
         <div class="row">
 
           <purple-category
-            icon="..."
+            icon="communication"
             name="Kommunikation"
             translation="Communication"
           ></purple-category>
 
           <purple-category
-            icon="..."
+            icon="emergency"
             name="Nödsituation"
             translation="Emergency"
           ></purple-category>
@@ -61,7 +62,7 @@
         <div class="row">
 
           <purple-category
-            icon="..."
+            icon="im"
             name="IM Kontakt"
             translation="IM Contact"
           ></purple-category>
@@ -70,6 +71,8 @@
     	</template>
 
     	<template v-if="category && !tutorial">
+        <button class="goBack" @click="category = false"><</button>
+
         <purple-header title="Bank" translation="Bank"></purple-header>
 
         <div class="tutorials">
@@ -85,43 +88,31 @@
     	</template>
 
     	<template v-if="tutorial">
+        <button class="goBack" @click="tutorial = false"><</button>
+
     		<template v-for="komponent in tutorial.fields.uppbyggnad[step].komponenter">
     			<template v-if="komponent.acf_fc_layout == 'text'">
-    				<div class="tutorial-text" v-html="komponent.text"></div>
+    				<div class="step-text" v-html="komponent.text"></div>
     			</template>
     			<template v-if="komponent.acf_fc_layout == 'video'">
-            <!-- <div class="embed-container">
+            <div class="embed-container">
               <iframe :src="'https://www.youtube.com/embed/' + komponent.youtube_video_id" frameborder='0' allowfullscreen></iframe>
-            </div> -->
+            </div>
     			</template>
     			<template v-if="komponent.acf_fc_layout == 'bild'">
-    				<img :src="komponent.bild_url" alt=""><br>
+    				<img class="step-image" :src="komponent.bild_url" alt="">
     			</template>
     			<template v-if="komponent.acf_fc_layout == 'ljudfil'">
 
     			</template>
     		</template>
     		<div class="step-buttons">
-    			<template v-if="tutorial.fields.uppbyggnad.length == 1">
-    				<button v-on:click="menu">Avsluta</button>
-    			</template>
-    			<template v-else>
-    				<template v-if="step == 0">
-    					<button @click="menu">Avsluta</button>
-    					<button @click="stepForward">Nästa</button>
-    				</template>
-    				<template v-else>
-    					<template v-if="step == (tutorial.fields.uppbyggnad.length - 1)">
-    						<button @click="stepBack">Föregående</button>
-    						<button @click="menu">Avsluta</button>
-    					</template>
-    					<template v-else>
-    						<button @click="stepBack">Föregående</button>
-    						<button @click="menu">Avsluta</button>
-    						<button @click="stepForward">Nästa</button>
-    					</template>
-    				</template>
-    			</template>
+					<template v-if="step == (tutorial.fields.uppbyggnad.length - 1)">
+						<button @click="menu">Avsluta</button>
+					</template>
+					<template v-else>
+						<button @click="stepForward">Nästa</button>
+					</template>
     		</div>
     	</template>
     </div>

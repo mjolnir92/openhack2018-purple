@@ -17,7 +17,7 @@ Vue.component('purple-category', {
   template: `
     <div class="category">
       <div class="category-icon">
-        {{icon}}
+        <img class="category-image" :src="'images/' + icon + '.png'">
       </div>
       <div class="category-name">
         {{name}}
