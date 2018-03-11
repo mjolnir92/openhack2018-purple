@@ -1,7 +1,8 @@
 const app = new Vue({
   el: '#app',
   data: {
-    message: 'Hello Purple',
+    message: '',
+    translatedMessage: '',
     languages: [],
     tutorials: [],
 
@@ -9,7 +10,9 @@ const app = new Vue({
 
     language: false,
     category: false,
-    tutorial: false
+    tutorial: false,
+
+    im: false,
   },
   http: {
     root: '/root',
@@ -18,6 +21,54 @@ const app = new Vue({
     }
   },
   methods: {
+    // VOICE RE
+    record() {
+      let recognizing;
+      let translateinfo = '';
+      function reset() {
+        recognizing = false;
+        this.message = '';
+        speech.start();
+      }
+      let speech = new webkitSpeechRecognition();
+      speech.continuous = false;
+      speech.interimResults = true;
+      speech.lang = 'en-US';
+      speech.start();
+      speech.onstart = () => {
+          recognizing = true;
+      };
+      speech.onresult = (event) => {
+        let interim_transcript = '';
+        let final_transcript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            final_transcript += event.results[i][0].transcript;
+          }
+        }
+        this.message = final_transcript;
+      };
+      speech.onerror = function(event) {
+          console.error(event.error);
+      };
+      speech.onend = () => {
+        axios.get('https://translation.googleapis.com/language/translate/v2', {
+          params: {
+            target: 'sv',
+            key: 'AIzaSyD6pBMi8PN__i7PHjWk8-ql-q7WudLRptQ',
+            q: this.message
+          }
+        })
+        .then(res => {
+          res.data.data.translations.forEach(trans => {
+            if (trans.detectedSourceLanguage === 'en') {
+              this.translatedMessage = trans.translatedText;
+            }
+          });
+        });
+      };
+    },
+
     setLanguage(language) {
       this.language = language || false;
     },
@@ -37,22 +88,23 @@ const app = new Vue({
       this.category = null;
       this.tutorial = null;
       this.step = 0;
+    },
+    postMessage() {
+      function makeid() {
+        var text = "";
+        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+        for (var i = 0; i < 5; i++)
+          text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+        return text;
+      }
+
+      this.$http.post(`http://weird.se/wp-json/wp/v2/messages?title=0_cookie_${makeid()}&content=${this.translatedMessage}&status=publish`).then(() => {
+        this.message = '';
+        this.translatedMessage = '';
+      });
     }
-    // postMessage() {
-    //   function makeid() {
-    //     var text = "";
-    //     var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    //
-    //     for (var i = 0; i < 5; i++)
-    //       text += possible.charAt(Math.floor(Math.random() * possible.length));
-    //
-    //     return text;
-    //   }
-    //
-    //   this.$http.post(`http://weird.se/wp-json/wp/v2/messages?title=0_cookie_${makeid()}&content=${this.message}&status=publish`).then(() => {
-    //     this.message = '';
-    //   });
-    // }
   },
   mounted() {
     this.$http.get('http://weird.se/wp-json/wp/v2/tutorials').then(({body}) => {
