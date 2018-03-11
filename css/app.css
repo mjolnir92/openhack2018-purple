@@ -103,6 +103,10 @@ button {
 
 }
 
+.step-video {
+	margin-bottom: 30px;
+}
+
 .step-text {
 	font-size: 24px;
   color: #FFF;

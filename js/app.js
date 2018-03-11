@@ -7,8 +7,8 @@ const app = new Vue({
 
     step: 0,
 
-    language: true,
-    category: true,
+    language: false,
+    category: false,
     tutorial: false
   },
   http: {
