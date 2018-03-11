@@ -8,111 +8,121 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <script src="js/external/vue.js"></script>
   <script src="js/external/vue-resource.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
 </head>
 <body>
   <div id="app">
     <div class="wrapper">
-      <template v-if="!language">
-        <purple-header title="Välj ditt språk" translation="Pick your language"></purple-header>
 
-        <img v-if="!languages.length" width="200" src="images/loading.gif">
+      <template v-if="!im">
+        <template v-if="!language">
+          <purple-header title="Välj ditt språk" translation="Pick your language"></purple-header>
 
-        <purple-language
-          v-for="(language, index) in languages"
-          :key="index"
-          :language="language.name"
-          :flag="language.flag"
-          @click.native="setLanguage"
-        ></purple-language>
-    	</template>
+          <img v-if="!languages.length" width="200" src="images/loading.gif">
 
-    	<template v-if="language && !category">
-        <button class="goBack" @click="language = false"><</button>
-        <purple-header title="Välkommen" translation="Welcome"></purple-header>
-        <div class="row">
-
-          <purple-category
-            icon="bank"
-            name="Bank"
-            translation="Bank"
-            @click.native="setCategory('bank')"
-          ></purple-category>
-
-          <purple-category
-            icon="work"
-            name="Jobb"
-            translation="Work"
-          ></purple-category>
-
-        </div>
-        <div class="row">
-
-          <purple-category
-            icon="communication"
-            name="Kommunikation"
-            translation="Communication"
-          ></purple-category>
-
-          <purple-category
-            icon="emergency"
-            name="Nödsituation"
-            translation="Emergency"
-          ></purple-category>
-        </div>
-        <div class="row">
-
-          <purple-category
-            icon="im"
-            name="IM Kontakt"
-            translation="IM Contact"
-          ></purple-category>
-
-        </div>
-    	</template>
-
-    	<template v-if="category && !tutorial">
-        <button class="goBack" @click="category = false"><</button>
-
-        <purple-header title="Bank" translation="Bank"></purple-header>
-
-        <div class="tutorials">
-          <purple-tutorial
-            v-for="(tutorial, index) in tutorials"
+          <purple-language
+            v-for="(language, index) in languages"
             :key="index"
-            :background="tutorial.fields.bakgrundsbild"
-            :logo="tutorial.fields.logga"
-            :introduction="tutorial.fields.introduktion"
-            @click.native="setTutorial(tutorial)"
-          ></purple-tutorial>
-        </div>
-    	</template>
+            :language="language.name"
+            :flag="language.flag"
+            @click.native="setLanguage"
+          ></purple-language>
+      	</template>
 
-    	<template v-if="tutorial">
-        <button class="goBack" @click="tutorial = false"><</button>
+      	<template v-if="language && !category">
+          <button class="goBack" @click="language = false"><</button>
+          <purple-header title="Välkommen" translation="Welcome"></purple-header>
+          <div class="row">
 
-    		<template v-for="komponent in tutorial.fields.uppbyggnad[step].komponenter">
-    			<template v-if="komponent.acf_fc_layout == 'text'">
-    				<div class="step-text" v-html="komponent.text"></div>
-    			</template>
-    			<template v-if="komponent.acf_fc_layout == 'video'">
-            <iframe class="step-video" width="100%" height="300" :src="'https://www.youtube.com/embed/' + komponent.youtube_video_id" frameborder="0" allowfullscreen></iframe>
-    			</template>
-    			<template v-if="komponent.acf_fc_layout == 'bild'">
-    				<img class="step-image" :src="komponent.bild_url" alt="">
-    			</template>
-    			<template v-if="komponent.acf_fc_layout == 'ljudfil'">
+            <purple-category
+              icon="bank"
+              name="Bank"
+              translation="Bank"
+              @click.native="setCategory('bank')"
+            ></purple-category>
 
-    			</template>
-    		</template>
-    		<div class="step-buttons">
-					<template v-if="step == (tutorial.fields.uppbyggnad.length - 1)">
-						<button @click="menu">Avsluta</button>
-					</template>
-					<template v-else>
-						<button @click="stepForward">Nästa</button>
-					</template>
-    		</div>
-    	</template>
+            <purple-category
+              icon="work"
+              name="Jobb"
+              translation="Work"
+            ></purple-category>
+
+          </div>
+          <div class="row">
+
+            <purple-category
+              icon="communication"
+              name="Kommunikation"
+              translation="Communication"
+            ></purple-category>
+
+            <purple-category
+              icon="emergency"
+              name="Nödsituation"
+              translation="Emergency"
+            ></purple-category>
+          </div>
+          <div class="row">
+
+            <purple-category
+              icon="im"
+              name="IM Kontakt"
+              translation="IM Contact"
+              @click.native="im = true"
+            ></purple-category>
+
+          </div>
+      	</template>
+
+      	<template v-if="category && !tutorial">
+          <button class="goBack" @click="category = false"><</button>
+
+          <purple-header title="Bank" translation="Bank"></purple-header>
+
+          <div class="tutorials">
+            <purple-tutorial
+              v-for="(tutorial, index) in tutorials"
+              :key="index"
+              :background="tutorial.fields.bakgrundsbild"
+              :logo="tutorial.fields.logga"
+              :introduction="tutorial.fields.introduktion"
+              @click.native="setTutorial(tutorial)"
+            ></purple-tutorial>
+          </div>
+      	</template>
+
+      	<template v-if="tutorial">
+          <button class="goBack" @click="tutorial = false"><</button>
+
+      		<template v-for="komponent in tutorial.fields.uppbyggnad[step].komponenter">
+      			<template v-if="komponent.acf_fc_layout == 'text'">
+      				<div class="step-text" v-html="komponent.text"></div>
+      			</template>
+      			<template v-if="komponent.acf_fc_layout == 'video'">
+              <iframe class="step-video" width="100%" height="300" :src="'https://www.youtube.com/embed/' + komponent.youtube_video_id" frameborder="0" allowfullscreen></iframe>
+      			</template>
+      			<template v-if="komponent.acf_fc_layout == 'bild'">
+      				<img class="step-image" :src="komponent.bild_url" alt="">
+      			</template>
+      			<template v-if="komponent.acf_fc_layout == 'ljudfil'">
+
+      			</template>
+      		</template>
+      		<div class="step-buttons">
+  					<template v-if="step == (tutorial.fields.uppbyggnad.length - 1)">
+  						<button @click="menu">Avsluta</button>
+  					</template>
+  					<template v-else>
+  						<button @click="stepForward">Nästa</button>
+  					</template>
+      		</div>
+      	</template>
+      </template>
+      <template v-else>
+        <textarea name="name" rows="8" cols="80" v-model="message"></textarea>
+        <button @click="record">Spela in</button><br>
+        <button @click="postMessage">Skicka</button>
+      </template>
     </div>
   </div>
 

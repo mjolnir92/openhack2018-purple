@@ -107,6 +107,10 @@ button {
 	margin-bottom: 30px;
 }
 
+textarea {
+	margin-bottom: 20px;
+}
+
 .step-text {
 	font-size: 24px;
   color: #FFF;
