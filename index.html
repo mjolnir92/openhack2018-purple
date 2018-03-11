@@ -1,183 +1,133 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <title>Open hack 2018 - Purple</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.13/dist/vue.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue-resource/1.5.0/vue-resource.js"></script>
-  </head>
-  <body>
-    <div id="app">
-    <!--
-      <div v-for="tutorial in tutorials">
-        <img :src="tutorial.fields.bakgrundsbild" alt=""><br>
-        <img :src="tutorial.fields.logga" alt=""><br>
-        Title: {{tutorial.title}}<br>
-        Text: {{tutorial.fields.text}}
-      </div>
-    -->
-	<template v-if="!language && !category && !tutorial">
-		<!--TODO: Show language page-->
-		<div class="lang-list" v-for="language in languages">
-			<div class="lang-select">
-				{{language.name}}
-				<img :src="language.flag">
-				<button v-on:click="getLanguage(language.id)">Välj</button>
-			</div>
-		</div>
-	</template>
-	    
-	<template v-if="language && !category && !tutorial">
-		<!--TODO: Show category page-->
-		<button v-on:click="setCategoryBank">Bank</button>
-	</template>
-	    
-	<template v-if="language && category && !tutorial">
-		<!--TODO: Show tutorial selection page for category-->
-		<div v-for="tutorial in tutorials">
-			<img :src="tutorial.fields.bakgrundsbild" alt=""><br>
-			<img :src="tutorial.fields.logga" alt=""><br>
-			{{tutorial.fields.introduktion}}
-			<button v-on:click="getTutorial(tutorial.id)">Starta lektion</button>
-		</div>
-	</template>
-	    
-	<template v-if="language && category && tutorial">
-		<!--TODO: Show tutorial by step-->
-		<div v-for="komponent in tutorial.acf.uppbyggnad[step].komponenter">
-			<div v-if="komponent.acf_fc_layout == 'text'">
-				{{komponent.text}}<br>
-			</div>
-			<div v-if="komponent.acf_fc_layout == video">
-				<!--TODO: Embed video here-->
-			</div>
-			<div v-if="komponent.acf_fc_layout == bild">
-				<img :src="komponent.bild_url" alt=""><br>
-			</div>
-			<div v-if="komponent.acf_fc_layout == ljudfil">
-				<!--TODO: Embed audio here-->
-			</div>
-		</div>
-		<!--TODO: Step buttons here-->
-		<div class="step-buttons">
-			<template v-if="tutorial.acf.uppbyggnad.length == 1">
-				<!--Exit only-->
-				<button v-on:click="menu">Avsluta</button>
-			</template>
-			<template v-else>
-				<template v-if="step == 0">
-					<!--Forward and exit-->
-					<button v-on:click="menu">Avsluta</button>
-					<button v-on:click="stepForward">Nästa</button>
-				</template>
-				<template v-else>
-					<template v-if="step == (tutorial.acf.uppbyggnad.length - 1)">
-						<!--Back and exit-->
-						<button v-on:click="stepBack">Föregående</button>
-						<button v-on:click="menu">Avsluta</button>
-					</template>
-					<template v-else>
-						<!--All-->
-						<button v-on:click="stepBack">Föregående</button>
-						<button v-on:click="menu">Avsluta</button>
-						<button v-on:click="stepForward">Nästa</button>
-					</template>
-				</template>
-			</template>
-		</div>
-	</template>
+<head>
+  <meta charset="utf-8">
+  <title>Open hack 2018 - Purple</title>
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/app.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <script src="js/external/vue.js"></script>
+  <script src="js/external/vue-resource.js"></script>
+</head>
+<body>
+  <div id="app">
+    <div class="wrapper">
+      <template v-if="!language">
+        <purple-header title="Välj ditt språk" translation="Pick your language"></purple-header>
+
+        <img v-if="!languages.length" width="200" src="images/loading.gif">
+
+        <purple-language
+          v-for="(language, index) in languages"
+          :key="index"
+          :language="language.name"
+          :flag="language.flag"
+          @click.native="setLanguage"
+        ></purple-language>
+    	</template>
+
+    	<template v-if="language && !category">
+        <purple-header title="Välkommen" translation="Welcome"></purple-header>
+        <div class="row">
+
+          <purple-category
+            icon="..."
+            name="Bank"
+            translation="Bank"
+            @click.native="setCategory('bank')"
+          ></purple-category>
+
+          <purple-category
+            icon="..."
+            name="Jobb"
+            translation="Work"
+          ></purple-category>
+
+        </div>
+        <div class="row">
+
+          <purple-category
+            icon="..."
+            name="Kommunikation"
+            translation="Communication"
+          ></purple-category>
+
+          <purple-category
+            icon="..."
+            name="Nödsituation"
+            translation="Emergency"
+          ></purple-category>
+        </div>
+        <div class="row">
+
+          <purple-category
+            icon="..."
+            name="IM Kontakt"
+            translation="IM Contact"
+          ></purple-category>
+
+        </div>
+    	</template>
+
+    	<template v-if="category && !tutorial">
+        <purple-header title="Bank" translation="Bank"></purple-header>
+
+        <div class="tutorials">
+          <purple-tutorial
+            v-for="(tutorial, index) in tutorials"
+            :key="index"
+            :background="tutorial.fields.bakgrundsbild"
+            :logo="tutorial.fields.logga"
+            :introduction="tutorial.fields.introduktion"
+            @click.native="setTutorial(tutorial)"
+          ></purple-tutorial>
+        </div>
+    	</template>
+
+    	<template v-if="tutorial">
+    		<template v-for="komponent in tutorial.fields.uppbyggnad[step].komponenter">
+    			<template v-if="komponent.acf_fc_layout == 'text'">
+    				<div class="tutorial-text" v-html="komponent.text"></div>
+    			</template>
+    			<template v-if="komponent.acf_fc_layout == 'video'">
+            <!-- <div class="embed-container">
+              <iframe :src="'https://www.youtube.com/embed/' + komponent.youtube_video_id" frameborder='0' allowfullscreen></iframe>
+            </div> -->
+    			</template>
+    			<template v-if="komponent.acf_fc_layout == 'bild'">
+    				<img :src="komponent.bild_url" alt=""><br>
+    			</template>
+    			<template v-if="komponent.acf_fc_layout == 'ljudfil'">
+
+    			</template>
+    		</template>
+    		<div class="step-buttons">
+    			<template v-if="tutorial.fields.uppbyggnad.length == 1">
+    				<button v-on:click="menu">Avsluta</button>
+    			</template>
+    			<template v-else>
+    				<template v-if="step == 0">
+    					<button @click="menu">Avsluta</button>
+    					<button @click="stepForward">Nästa</button>
+    				</template>
+    				<template v-else>
+    					<template v-if="step == (tutorial.fields.uppbyggnad.length - 1)">
+    						<button @click="stepBack">Föregående</button>
+    						<button @click="menu">Avsluta</button>
+    					</template>
+    					<template v-else>
+    						<button @click="stepBack">Föregående</button>
+    						<button @click="menu">Avsluta</button>
+    						<button @click="stepForward">Nästa</button>
+    					</template>
+    				</template>
+    			</template>
+    		</div>
+    	</template>
     </div>
+  </div>
 
-    <script>
-      Vue.http.options.root = '/root';
-      Vue.http.headers.common['Authorization'] = 'YXBpOnBhc3N3b3Jk';
-
-      const app = new Vue({
-        el: '#app',
-        data: {
-          message: 'Hello Purple',
-	  languages: [],
-          tutorials: [],
-
-	  step: 0,
-
-          language: null,
-          category: null,
-          tutorial: null
-        },
-	methods: {
-		stepForward: function(){
-			this.step = this.step + 1
-		},
-		stepBack: function(){
-			this.step = this.step - 1
-		},
-		menu: function(){
-			this.category = null
-			this.tutorial = null
-		},
-		setCategoryBank: function(){
-			this.category = "bank"
-		},
-		getTutorial: function(id){
-		  this.$http.get('http://weird.se/wp-json/wp/v2/tutorials/' + id).then(({body}) => {
-			console.log(body)
-			this.tutorial = body;
-		  }, response => {
-		    console.log('ERROR!');
-		  });
-		},
-		getLanguage: function(id){
-			console.log(id)
-		  this.$http.get('http://weird.se/wp-json/wp/v2/languages/' + id).then(({body}) => {
-			console.log(body)
-			this.language = body;
-		  }, response => {
-		    console.log('ERROR!');
-		  });
-		}
-	},
-        http: {
-          root: '/root',
-          headers: {
-            Authorization: 'YXBpOnBhc3N3b3Jk'
-          }
-        },
-        mounted() {
-          this.$http.get('http://weird.se/wp-json/wp/v2/tutorials').then(({body}) => {
-            const tutorials = body.map((post) => {
-              return {
-                id: post.id,
-                title: post.title.rendered,
-                fields: post.acf
-              }
-            });
-
-            console.log(tutorials);
-
-            this.tutorials = tutorials;
-          }, response => {
-            console.log('ERROR!');
-          });
-          
-	  this.$http.get('http://weird.se/wp-json/wp/v2/languages').then(({body}) => {
-            const languages = body.map((post) => {
-              return {
-		id: post.id,
-                name: post.title.rendered,
-                flag: post.acf.flagga
-              }
-            });
-
-            console.log(languages);
-
-            this.languages = languages;
-          }, response => {
-            console.log('ERROR!');
-          });
-        }
-      });
-    </script>
-  </body>
+  <script src="js/components.js"></script>
+  <script src="js/app.js"></script>
+</body>
 </html>
